@@ -555,3 +555,147 @@ total 4
 [jpmena@localhost code]$ cat public/index.php 
 <?php phpinfo(); ?>
 ```
+
+## ACCESSING the mysql Guest server:
+
+* the console at _vagrant up_ tells us that **33060** is the port on the host to access the _mysql 3306_ port on the guest !!!!
+* On **My Fedora 27 Host**, the only thing to do is to install a mysql client:
+    * mycli seems to be the paquet of choice ..
+
+```bash
+[jpmena@localhost virtualisation]$ dnf info mycli
+Dernière vérification de l’expiration des métadonnées effectuée il y a 1 day, 19:48:13 le ven. 16 mars 2018 18:05:39 CET.
+Paquets disponibles
+Nom          : mycli
+Version      : 1.16.0
+Révision     : 1.fc27
+Architecture : noarch
+Taille       : 106 k
+Source       : mycli-1.16.0-1.fc27.src.rpm
+Dépôt        : updates
+Résumé       : Interactive CLI for MySQL Database with auto-completion and syntax highlighting
+URL          : http://mycli.net
+Licence      : BSD
+Description  : Nice interactive shell for MySQL Database with auto-completion and
+             : syntax highlighting.
+
+```
+
+* so install it:
+  * We see at the dependecies that it iss typically a Python Tool !!!
+
+```bash
+[jpmena@localhost virtualisation]$ sudo dnf install mycli
+[sudo] Mot de passe de jpmena : 
+Dernière vérification de l’expiration des métadonnées effectuée il y a 0:51:05 le dim. 18 mars 2018 13:07:51 CET.
+Dépendances résolues.
+=====================================================================================================================================================================================================================
+ Paquet                                                       Architecture                                 Version                                               Dépôt                                         Taille
+=====================================================================================================================================================================================================================
+Installation de :
+ mycli                                                        noarch                                       1.16.0-1.fc27                                         updates                                       106 k
+Installation des dépendances:
+ python3-PyMySQL                                              noarch                                       0.7.11-2.fc27                                         fedora                                        157 k
+ python3-cli-helpers                                          noarch                                       1.0.1-2.fc27                                          updates                                        30 k
+ python3-click                                                noarch                                       6.7-3.fc26                                            fedora                                        131 k
+ python3-configobj                                            noarch                                       5.0.6-9.fc27                                          fedora                                         67 k
+ python3-prompt_toolkit                                       noarch                                       1.0.14-5.fc27                                         updates                                       438 k
+ python3-pygments                                             noarch                                       2.2.0-8.fc27                                          fedora                                        1.9 M
+ python3-sqlparse                                             noarch                                       0.2.2-3.fc27                                          fedora                                         80 k
+ python3-tabulate                                             noarch                                       0.8.1-1.fc27                                          fedora                                         44 k
+ python3-terminaltables                                       noarch                                       3.1.0-4.fc27                                          fedora                                         31 k
+ python3-wcwidth                                              noarch                                       0.1.7-4.fc27                                          fedora                                         31 k
+
+Résumé de la transaction
+=====================================================================================================================================================================================================================
+Installer  11 Paquets
+
+Taille totale des téléchargements : 3.0 M
+Taille des paquets installés : 14 M
+Voulez-vous continuer ? [o/N] :o
+...............
+## How to use it
+[jpmena@localhost virtualisation]$ mycli --help
+Usage: mycli [OPTIONS] [DATABASE]
+
+  A MySQL terminal client with auto-completion and syntax highlighting.
+
+  Examples:
+    - mycli my_database
+    - mycli -u my_user -h my_host.com my_database
+    - mycli mysql://my_user@my_host.com:3306/my_database
+
+Options:
+  -h, --host TEXT               Host address of the database.
+  -P, --port INTEGER            Port number to use for connection. Honors
+                                $MYSQL_TCP_PORT.
+  -u, --user TEXT               User name to connect to the database.
+  -S, --socket TEXT             The socket file to use for connection.
+  -p, --password TEXT           Password to connect to the database.
+  --pass TEXT                   Password to connect to the database.
+  --ssl-ca PATH                 CA file in PEM format.
+  --ssl-capath TEXT             CA directory.
+  --ssl-cert PATH               X509 cert in PEM format.
+  --ssl-key PATH                X509 key in PEM format.
+  --ssl-cipher TEXT             SSL cipher to use.
+  --ssl-verify-server-cert      Verify server's "Common Name" in its cert
+                                against hostname used when connecting. This
+                                option is disabled by default.
+  -v, --version                 Output mycli's version.
+  -D, --database TEXT           Database to use.
+  -d, --dsn TEXT                Use DSN configured into the [alias_dsn]
+                                section of myclirc file.
+  -R, --prompt TEXT             Prompt format (Default: "\t \u@\h:\d> ").
+  -l, --logfile FILENAME        Log every query and its results to a file.
+  --defaults-group-suffix TEXT  Read MySQL config groups with the specified
+                                suffix.
+  --defaults-file PATH          Only read MySQL options from the given file.
+  --myclirc PATH                Location of myclirc file.
+  --auto-vertical-output        Automatically switch to vertical output mode
+                                if the result is wider than the terminal
+                                width.
+  -t, --table                   Display batch output in table format.
+  --csv                         Display batch output in CSV format.
+  --warn / --no-warn            Warn before running a destructive query.
+  --local-infile BOOLEAN        Enable/disable LOAD DATA LOCAL INFILE.
+  --login-path TEXT             Read this path from the login file.
+  -e, --execute TEXT            Execute command and quit.
+  --help                        Show this message and exit.
+
+``` 
+
+* following the help above in my case:
+  * Following to tat [GitHub issue](https://github.com/laravel/homestead/issues/453)
+    * the **homestead**  (password **secret**) as the same rights as root otherwise 
+  * host: localhost port 33060
+
+```bash
+# I first resume the suspended vm
+[jpmena@localhost virtualisation]$ homestead resume
+==> homestead-7: Resuming suspended VM...
+==> homestead-7: Booting VM...
+==> homestead-7: Waiting for machine to boot. This may take a few minutes...
+    homestead-7: SSH address: 127.0.0.1:2222
+    homestead-7: SSH username: vagrant
+    homestead-7: SSH auth method: private key
+==> homestead-7: Machine booted and ready!
+==> homestead-7: Machine already provisioned. Run `vagrant provision` or use the `--provision`
+==> homestead-7: flag to force provisioning. Provisioners marked to run always will still run.
+# Always from host I access the guest mysql databases
+## connect to the homestead user and its database
+[jpmena@localhost virtualisation]$ mycli -uhomestead -P33060 -psecret -Dhomestead
+Version: 1.16.0
+Chat: https://gitter.im/dbcli/mycli
+Mail: https://groups.google.com/forum/#!forum/mycli-users
+Home: http://mycli.net
+Thanks to the contributor - Tech Blue Software
+mysql homestead@localhost:homestead> show tables; #autocompletion is active !!!!
++---------------------+
+| Tables_in_homestead |
++---------------------+
+0 rows in set
+Time: 0.006s
+mysql homestead@localhost:homestead> \q
+Goodbye!
+
+```
