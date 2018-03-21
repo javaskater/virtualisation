@@ -158,3 +158,52 @@ Terminé !
 #### The result
 
 ![Screenhot of the Homestead's mysql server seen be the Host's Workbench](WorkbenchHomestaed.png)
+
+## Eclipse PHP (Oxygen2) / DB Viwer
+
+* Go to Help / Eclipses Market places
+* Search for Databasse or DBViewer
+  * Note that there is also an extension for Mongo DB
+* restart ...
+* Go to Open Perspecctive , choose *DBViewver*
+  * TODO: ajouter le Driver / Pilote !!!
+
+### Adding the  [mysql driver for java](https://dev.mysql.com/downloads/connector/j/)
+
+* download the [mysql jav driver](https://dev.mysql.com/downloads/connector/j/)
+
+```bash
+[jpmena@localhost Ateliers]$ ls -ltr | tail -1
+-rw-rw-r--.  1 jpmena jpmena   4434926 21 mars  08:46 mysql-connector-java-5.1.46.tar.gz
+[jpmena@localhost Ateliers]$ ls -ltr mysql-connector-java-5.1.46
+total 2452
+drwxr-xr-x. 8 jpmena jpmena    4096 26 févr. 14:28 src
+-rw-r--r--. 1 jpmena jpmena   63658 26 févr. 14:28 README.txt
+-rw-r--r--. 1 jpmena jpmena   61407 26 févr. 14:28 README
+-rw-r--r--. 1 jpmena jpmena 1004838 26 févr. 14:28 mysql-connector-java-5.1.46.jar # This jar
+-rw-r--r--. 1 jpmena jpmena 1004840 26 févr. 14:28 mysql-connector-java-5.1.46-bin.jar #or that jar ????
+-rw-r--r--. 1 jpmena jpmena   18122 26 févr. 14:28 COPYING 
+-rw-r--r--. 1 jpmena jpmena  247456 26 févr. 14:28 CHANGES
+-rw-r--r--. 1 jpmena jpmena   91845 26 févr. 14:28 build.xml
+```
+
+* When creating the new connnection I get asked for the Driver Path.
+  * the Add File Button allows me to add one of the 2 jar files above
+
+* next screen I change the dropdown list for a *mysql.jdbc.driver*
+  * I let the Type 4
+  * same qcreen:
+    * connnection string : **jdbc:mysql://localhost:33060/homestead**
+    * Database homestead
+    * passsword secret
+  * clic on the buttton: Test Connection !!! 
+* Click next to select the Databases you wannt to see
+* click Finish ....
+
+### The result
+
+* While opening cdrs93 Database:
+![Opening cdrs Database in DB Viewer](DBViewer.jpg)
+
+
+### TODO metre une image de la base lue !!!!
