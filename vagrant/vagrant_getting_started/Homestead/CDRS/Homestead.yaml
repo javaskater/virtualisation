@@ -10,19 +10,21 @@ keys:
     - ~/.ssh/id_rsa
 
 folders:
-    - map: ~/CONSULTANT/code
+    - map: ~/code
       to: /home/vagrant/code
     - map: ~/CDRS/wordpress
-      to: /home/vagrant/CDRS/wordpress
+      to: /home/vagrant/cdrswordpress
 
 sites:
     - map: homestead.test
       to: /home/vagrant/code/public
     - map: cdrs.test
-      to: /home/vagrant/CDRS/wordpress
+      to: /home/vagrant/cdrswordpress
+    - map: phpmyadmin.test 
+      to: /usr/share/nginx/html/phpmyadmin
+
 databases:
     - homestead
-    - cdrs93
 
 # blackfire:
 #     - id: foo
